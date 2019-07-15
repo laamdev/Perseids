@@ -11,9 +11,6 @@ class Player {
     this._mouseX = 0;
     this._mouseY = 0;
 
-    this._pX = 0;
-    this._pY = 0;
-
     // we declare the player's X and Y position
     this._xPosition = canvasW / 2;
     this._yPosition = (canvasH / 2) * 1.5;
@@ -56,7 +53,7 @@ class Player {
 
   draw() {
     this._ctx.beginPath();
-    this._ctx.fillStyle = "#ED6A5A";
+    this._ctx.fillStyle = "#2EC4B6";
     this._ctx.arc(this._xPosition, this._yPosition, this._radius, 0, 2 * Math.PI, true);
     this._ctx.fill(); //Funcion que anima los frames.
   }

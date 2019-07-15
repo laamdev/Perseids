@@ -1,3 +1,7 @@
+body {
+  background-color: #011627;
+}
+
 canvas {
   padding: 0;
   margin: auto;
@@ -9,4 +13,5 @@ canvas {
   bottom: 0;
   left: 0;
   right: 0;
+  border: 5px solid #fdfffc;
 }
