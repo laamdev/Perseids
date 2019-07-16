@@ -1,14 +1,19 @@
 const Game = {
   ctx: undefined,
-  canvas: undefined,
+  gameScreen: undefined,
   width: undefined,
   height: undefined,
   fps: 60,
   framesCounter: 0,
   cursor: undefined,
   score: undefined,
+  enemyRate: 0,
   difficulty: 0,
+  gamePaused: false,
   enemies: [],
+  keys: {
+    SPACEBAR: 32
+  },
 
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
@@ -16,15 +21,15 @@ const Game = {
 
   init: function() {
     //sets the canvas and the context
-    this.canvas = document.getElementById("canvas");
-    this.ctx = this.canvas.getContext("2d");
+    this.gameScreen = document.getElementById("gameScreen");
+    this.ctx = this.gameScreen.getContext("2d");
 
     //set canvas dimensions
     this.width = 600;
     this.height = 700;
 
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
+    this.gameScreen.width = this.width;
+    this.gameScreen.height = this.height;
 
     //starts the game
     this.start();
@@ -42,12 +47,14 @@ const Game = {
     this.interval = setInterval(() => {
       // counts frames
       this.framesCounter++;
+
       // refreshes frames
       if (this.framesCounter > 1000) this.framesCounter = 0;
-      // associates frames with points
+
+      // Raises the score every 100 frames
       if (this.framesCounter % 100 == 0) {
         if (this.player._yPosition >= 1 && this.player._yPosition <= 100) {
-          this.score += 7; //Aumentamos la puntuación de la partida cada 100 frames dependiendo de la posicion Y del jugador.
+          this.score += 7; //The score is higher if the player is closer to the top of the screen.
         } else if (this.player._yPosition >= 101 && this.player._yPosition <= 200) {
           this.score += 6;
         } else if (this.player._yPosition >= 201 && this.player._yPosition <= 300) {
@@ -69,7 +76,7 @@ const Game = {
       this.clear();
       this.drawAll();
       this.moveAll();
-      this.harder();
+      this.upDifficulty();
       this.generateEnemies();
       this.clearEnemies();
       this.isCollision();
@@ -82,11 +89,17 @@ const Game = {
 
   reset: function() {
     this.background = new Background(this.ctx, this.width, this.height); // we pass this properties to background.js
-    this.player = new Player(this.ctx, this.canvas, this.width, this.height);
+    this.player = new Player(this.ctx, this.gameScreen, this.width, this.height);
     this.scoreboard = ScoreBoard;
     this.scoreboard.init(this.ctx);
     this.score = 0;
     this.enemies = [];
+
+    this.points = 0;
+    this.menuOn = 0; // 0: not activated, 1: activated
+    this.controlsOn = 0;
+    this.endOn = 0;
+    this.seconds = 0;
   },
 
   ///////////////////////////////////////////////////////////////////////////
@@ -94,7 +107,7 @@ const Game = {
   ///////////////////////////////////////////////////////////////////////////
 
   clear: function() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.gameScreen.width, this.gameScreen.height);
   },
 
   ///////////////////////////////////////////////////////////////////////////
@@ -105,6 +118,7 @@ const Game = {
     this.background.draw();
     this.player.draw();
     this.enemies.forEach(enem => enem.draw());
+
     this.drawScore();
   },
 
@@ -113,7 +127,6 @@ const Game = {
   ///////////////////////////////////////////////////////////////////////////
 
   moveAll: function() {
-    // this.background.move();
     this.enemies.forEach(enem => enem.move());
   },
 
@@ -121,17 +134,22 @@ const Game = {
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
 
-  harder: function() {
+  upDifficulty: function() {
     if (this.score >= 50 && this.score < 100) {
-      this.difficulty = 20;
+      this.enemyRate = 20;
+      this.difficulty = 1.5;
     } else if (this.score >= 100 && this.score < 150) {
-      this.difficulty = 10;
-    } else if (this.score >= 150 && this.score < 200) {
-      this.difficulty = 5;
-    } else if (this.score >= 200 && this.score < 300) {
+      this.enemyRate = 10;
       this.difficulty = 2;
+    } else if (this.score >= 150 && this.score < 200) {
+      this.enemyRate = 5;
+      this.difficulty = 2.5;
+    } else if (this.score >= 200 && this.score < 300) {
+      this.enemyRate = 2;
+      this.difficulty = 3;
     } else {
-      this.difficulty = 30;
+      this.enemyRate = 30;
+      this.difficulty = 1;
     }
   },
 
@@ -140,20 +158,10 @@ const Game = {
   ///////////////////////////////////////////////////////////////////////////
 
   generateEnemies: function() {
-    if (this.framesCounter % this.difficulty == 0) {
-      //Generamos obstaculos cada x frames.
-      console.log(this.enemies);
-      this.enemies.push(new Enemy(this.ctx, this.canvas.width, this.canvas.height, this.score, this.difficulty)); //pusheamos nuevos obstaculos
+    //Generates an obstacle every (enemyRate) frames
+    if (this.framesCounter % this.enemyRate == 0) {
+      this.enemies.push(new Enemy(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty)); //pusheamos nuevos obstaculos
     }
-
-    // meter en el constructor el radius y la vely
-    // variable el 50
-
-    // if (this.score >= 50) {
-    //   this.framesCounter % 20 == 0;
-    //   this.enemies._velY = Math.floor(Math.random() * (6 - 3)) + 3;
-    //   this.enemies._eRadius = Math.floor(Math.random() * (100 - 30)) + 30; //  rate of enemies
-    //}
   },
 
   ///////////////////////////////////////////////////////////////////////////
@@ -162,7 +170,7 @@ const Game = {
 
   clearEnemies: function() {
     this.enemies.forEach((enem, idx) => {
-      if (enem._posY >= this.canvas.height) {
+      if (enem._posY >= this.gameScreen.height) {
         this.enemies.splice(idx, 1);
       }
     });
@@ -183,14 +191,18 @@ const Game = {
       }
     });
 
-    if (this.player._xPosition + this.player._radius > this.canvas.width) {
+    if (this.player._xPosition + this.player._radius > this.gameScreen.width) {
       this.gameOver();
+      this.ui.gameOverScreen();
     } else if (this.player._xPosition - this.player._radius < 0) {
       this.gameOver();
-    } else if (this.player._yPosition + this.player._radius > this.canvas.height) {
+      this.ui.gameOverScreen();
+    } else if (this.player._yPosition + this.player._radius > this.gameScreen.height) {
       this.gameOver();
+      this.ui.gameOverScreen();
     } else if (this.player._yPosition - this.player._radius < 0) {
       this.gameOver();
+      this.ui.gameOverScreen();
     }
   },
 
@@ -205,13 +217,43 @@ const Game = {
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
+  pauseToggle: function() {
+    document.onkeydown = function(e) {
+      switch (e.keyCode) {
+        case 32:
+          if (this.gamePaused == false) {
+            this.gamePaused == true;
+            break;
+          }
+      }
+    };
+  },
+  ///////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
 
   gameOver: function() {
     //stops the game
     clearInterval(this.interval);
+    document.getElementById("game-over").style.display = "block";
+    document.getElementById("restart-button").style.visibility = "visible";
+    document.getElementById("restart-button").style.display = "block";
+    this.restart();
+    document.getElementById("restart").style.display = "none";
+  },
+
+  restart: function() {
+    document.getElementById("restart-button").onclick = () => {
+      document.getElementById("game-over").style.display = "none";
+      this.reset();
+      this.start();
+      document.getElementById("restart-button").style.visibility = "hidden";
+    };
   }
 };
-
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
+// document.getElementById("game-over").style.display = "none";
+// this.clear();
+// this.reset();

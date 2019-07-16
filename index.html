@@ -11,24 +11,26 @@
   <script type="text/javascript" src="javascripts/player.js"></script>
   <script type="text/javascript" src="javascripts/game.js"></script>
   <script type="text/javascript" src="javascripts/index.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap-reboot.min.css">
   <link rel="stylesheet" href="style.css">
-
+  <link href="https://fonts.googleapis.com/css?family=Monoton&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Bungee&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Bungee+Shade|VT323&display=swap" rel="stylesheet">
   <title>Perseids</title>
 
 </head>
 
 <body>
-  <!-- <img src="./images/logo.png" alt="" style="width:50%;">
-  <br>
-  <button id="start-button">StartGame</button> -->
-  <div class="canvasContainer">
-    <canvas id="canvas"></canvas>
+  <div class="aligner">
+    <h1 class="logo" id="logo">Perseids</h1>
+    <button class="start-button" id="start-button">Start</button>
+    <canvas id="gameScreen"></canvas>
+    <div class="points">SCORE: <span id="points"></span></div>
+    <div class="game-over" id="game-over">Game Over </div>
+    <button class="restart-button" id="restart-button">Restart</button>
   </div>
-
-
 </body>
 
 </html>

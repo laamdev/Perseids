@@ -1,17 +1,56 @@
 body {
-  background-color: #011627;
+  background-color: #f2ebdc;
 }
 
-canvas {
-  padding: 0;
+h1 {
+  font-family: "Monoton", cursive;
+  color: #f2a444;
+  font-size: 300px;
+  display: flex;
   margin: auto;
-  display: block;
-  width: 600;
-  height: 700;
+  padding: 0;
+}
+
+.aligner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#gameScreen {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 65px;
+  margin-bottom: 0;
+  border-radius: 50%;
+}
+
+.start-button {
+  margin: 0 auto;
+  padding: 20px;
+  margin-top: 100px;
+  width: 200px;
+}
+
+.game-over {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border: 5px solid #fdfffc;
+  top: 100px;
+  left: 210px;
+  color: #f24c3d;
+  font-family: "Bungee Shade", cursive;
+  font-size: 100px;
+  cursor: default;
+  display: none;
+}
+.restart-button {
+  font-size: 20px;
+  cursor: pointer;
+  position: relative;
+  left: 50px;
+  display: none;
+  font-family: "Bungee", cursive;
+}
+.restart-button:hover {
+  color: #ffd700;
 }
