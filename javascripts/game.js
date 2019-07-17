@@ -9,11 +9,9 @@ const Game = {
   score: undefined,
   enemyRate: 0,
   difficulty: 0,
-  gamePaused: false,
+  vulnerable: true,
   enemies: [],
-  keys: {
-    SPACEBAR: 32
-  },
+  powerups: [],
 
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
@@ -76,10 +74,13 @@ const Game = {
       this.clear();
       this.drawAll();
       this.moveAll();
-      this.upDifficulty();
+      this.generatePowerups();
       this.generateEnemies();
+      this.isCollisionPowerup();
+      this.isCollisionEnemy();
+      this.clearPowerups();
       this.clearEnemies();
-      this.isCollision();
+      this.upDifficulty();
     }, 1000 / this.fps);
   },
 
@@ -94,12 +95,7 @@ const Game = {
     this.scoreboard.init(this.ctx);
     this.score = 0;
     this.enemies = [];
-
-    this.points = 0;
-    this.menuOn = 0; // 0: not activated, 1: activated
-    this.controlsOn = 0;
-    this.endOn = 0;
-    this.seconds = 0;
+    this.powerups = [];
   },
 
   ///////////////////////////////////////////////////////////////////////////
@@ -118,6 +114,7 @@ const Game = {
     this.background.draw();
     this.player.draw();
     this.enemies.forEach(enem => enem.draw());
+    this.powerups.forEach(powup => powup.draw());
 
     this.drawScore();
   },
@@ -128,6 +125,7 @@ const Game = {
 
   moveAll: function() {
     this.enemies.forEach(enem => enem.move());
+    this.powerups.forEach(powup => powup.move());
   },
 
   ///////////////////////////////////////////////////////////////////////////
@@ -160,7 +158,14 @@ const Game = {
   generateEnemies: function() {
     //Generates an obstacle every (enemyRate) frames
     if (this.framesCounter % this.enemyRate == 0) {
-      this.enemies.push(new Enemy(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty)); //pusheamos nuevos obstaculos
+      this.enemies.push(new Enemy(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty)); //pusheamos nuevos enemies
+    }
+  },
+
+  generatePowerups: function() {
+    //Generates an obstacle every (enemyRate) frames
+    if (this.framesCounter % 7000 == 0) {
+      this.powerups.push(new Powerup(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty)); //pusheamos nuevos powerups
     }
   },
 
@@ -176,34 +181,47 @@ const Game = {
     });
   },
 
+  clearPowerups: function() {
+    this.powerups.forEach((powup, idx) => {
+      if (powup._posY <= 0) {
+        this.powerups.splice(idx, 1);
+      }
+    });
+  },
+
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
 
-  isCollision: function() {
+  isCollisionEnemy: function() {
     this.enemies.some(enem => {
       let xDistance = this.player._xPosition - enem._posX;
       let yDistance = this.player._yPosition - enem._posY;
       let distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
-      if (distance < this.player._radius + enem._eRadius) {
+      if (distance < this.player._radius + enem._eRadius && this.vulnerable) {
+        console.log(this.vulnerable);
         this.gameOver();
       }
     });
+  },
 
-    if (this.player._xPosition + this.player._radius > this.gameScreen.width) {
-      this.gameOver();
-      this.ui.gameOverScreen();
-    } else if (this.player._xPosition - this.player._radius < 0) {
-      this.gameOver();
-      this.ui.gameOverScreen();
-    } else if (this.player._yPosition + this.player._radius > this.gameScreen.height) {
-      this.gameOver();
-      this.ui.gameOverScreen();
-    } else if (this.player._yPosition - this.player._radius < 0) {
-      this.gameOver();
-      this.ui.gameOverScreen();
-    }
+  isCollisionPowerup: function() {
+    this.powerups.some(powup => {
+      let xDistance = this.player._xPosition - powup._posX;
+      let yDistance = this.player._yPosition - powup._posY;
+      let distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+
+      if (distance <= this.player._radius + powup._puRadius && this.vulnerable) {
+        this.powerups.pop();
+        this.vulnerable = false;
+        console.log(this.vulnerable);
+
+        setTimeout(() => {
+          this.vulnerable = true;
+        }, 6000);
+      }
+    });
   },
 
   ///////////////////////////////////////////////////////////////////////////
@@ -212,21 +230,6 @@ const Game = {
 
   drawScore: function() {
     this.scoreboard.update(this.score);
-  },
-
-  ///////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////
-  pauseToggle: function() {
-    document.onkeydown = function(e) {
-      switch (e.keyCode) {
-        case 32:
-          if (this.gamePaused == false) {
-            this.gamePaused == true;
-            break;
-          }
-      }
-    };
   },
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
@@ -239,7 +242,7 @@ const Game = {
     document.getElementById("restart-button").style.visibility = "visible";
     document.getElementById("restart-button").style.display = "block";
     this.restart();
-    document.getElementById("restart").style.display = "none";
+    //.getElementById("restart").style.display = "none";
   },
 
   restart: function() {

@@ -3,11 +3,11 @@ const ScoreBoard = {
 
   init: function(ctx) {
     this.ctx = ctx;
-    this.ctx.font = "20px Space Mono";
+    this.ctx.font = "20px Bungee";
   },
 
   update: function(score) {
-    this.ctx.fillStyle = "#03258C";
-    this.ctx.fillText(Math.floor(score), 295, 680);
+    this.ctx.fillStyle = "#f2ebdc";
+    this.ctx.fillText(Math.floor(score), 290, 680);
   }
 };

@@ -27,30 +27,45 @@ h1 {
 }
 
 .start-button {
-  margin: 0 auto;
-  padding: 20px;
-  margin-top: 100px;
+  margin: 70px auto 0 auto;
   width: 200px;
+  padding: 50px 0;
+  font-size: 40px;
+  cursor: pointer;
+  font-family: "Bungee", cursive;
+  color: #f2ebdc;
+  background-color: #f24c3d;
+  border-style: none;
+  border-radius: 50%;
+}
+
+.start-button:hover {
+  color: #f2a444;
 }
 
 .game-over {
   position: absolute;
-  top: 100px;
-  left: 210px;
+  margin: auto;
   color: #f24c3d;
   font-family: "Bungee Shade", cursive;
-  font-size: 100px;
+  font-size: 150px;
   cursor: default;
   display: none;
 }
 .restart-button {
-  font-size: 20px;
+  width: 100px;
+  font-size: 15px;
+  padding: 25px 0;
   cursor: pointer;
-  position: relative;
-  left: 50px;
+  position: absolute;
+  margin: 200px auto 0 auto;
   display: none;
   font-family: "Bungee", cursive;
+  color: #f2ebdc;
+  background-color: #f24c3d;
+  border-style: none;
+  border-radius: 50%;
 }
 .restart-button:hover {
-  color: #ffd700;
+  color: #f2a444;
 }

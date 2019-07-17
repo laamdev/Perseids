@@ -16,11 +16,13 @@ class Player {
     this._yPosition = (gameScreenH / 2) * 1.5;
 
     // we declare the radius of the player
-    this._radius = 10;
+    this._radius = 20;
 
     // we declare the width and the height of the player
     this._pWidth = this._radius * 2;
     this._pHeight = this._radius * 2;
+
+    this._invincible = false;
 
     // we call the listeners since the beggining
     this.setListeners();
@@ -53,7 +55,7 @@ class Player {
 
   draw() {
     this._ctx.beginPath();
-    this._ctx.fillStyle = "#1F438C";
+    this._ctx.fillStyle = "#3B74BF";
     this._ctx.arc(this._xPosition, this._yPosition, this._radius, 0, 2 * Math.PI, true);
     this._ctx.fill(); //Funcion que anima los frames.
   }
