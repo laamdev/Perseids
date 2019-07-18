@@ -11,7 +11,7 @@ class Enemy {
     this._posY = 0; // enemies appear from outside the screen
 
     this._velY = (Math.floor(Math.random() * (5 - 2)) + 2) * this._difficulty; // enemies' vertical velocity
-    this._velX = Math.floor(Math.random() * (0.5 - -0.5)) + -0.5; // enemies' vertical velocity
+    this._velX = Math.floor(Math.random() * (0.2 - -0.2) + 0.2) * this._difficulty; // enemies' vertical velocity
 
     this._eRadius = (Math.floor(Math.random() * (10 - 4)) + 4) * this._difficulty; //  enemies' size
 

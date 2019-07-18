@@ -10,6 +10,9 @@ const Game = {
   enemyRate: 0,
   difficulty: 0,
   vulnerable: true,
+  normalspeed: true,
+  powerUpOnScreen: false,
+  powerSlowOnScreen: false,
   enemies: [],
   powerups: [],
   powerslows: [],
@@ -51,6 +54,11 @@ const Game = {
     // resets the game's parameters
     this.reset();
 
+    this.powerSlowOnScreen = false;
+    this.powerUpOnScreen = false;
+    console.log(`Power slow on screen?: ${this.powerSlowOnScreen}`);
+    console.log(`Power up on screen?: ${this.powerUpOnScreen}`);
+
     // sets gameloop
     this.interval = setInterval(() => {
       // counts frames
@@ -84,7 +92,6 @@ const Game = {
       this.clear();
       this.drawAll();
       this.moveAll();
-      this.generatePowerups();
       this.generatePowerslows();
       this.generateEnemies();
       this.isCollisionPowerup();
@@ -173,7 +180,7 @@ const Game = {
 
   generateEnemies: function() {
     //Generates an obstacle every (enemyRate) frames
-    if (this.framesCounter % this.enemyRate == 0) {
+    if (this.framesCounter % this.enemyRate == 0 && this.normalspeed == true) {
       this.enemies.push(new Enemy(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty)); //pusheamos nuevos enemies
     }
   },
@@ -183,9 +190,12 @@ const Game = {
   ///////////////////////////////////////////////////////////////////////////
 
   generatePowerups: function() {
-    //Generates an obstacle every (enemyRate) frames
-    if (this.framesCounter % 7000 == 0) {
-      this.powerups.push(new Powerup(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty)); //pusheamos nuevos powerups
+    if (this.powerSlowOnScreen == false && this.powerUpOnScreen == false) {
+      this.powerups.push(new Powerup(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty));
+      this.powerUpOnScreen = true;
+      this.powerSlowOnScreen = false;
+      console.log(this.powerups);
+      console.log("power up on screen: " + this.powerUpOnScreen);
     }
   },
 
@@ -194,10 +204,12 @@ const Game = {
   ///////////////////////////////////////////////////////////////////////////
 
   generatePowerslows: function() {
-    //Generates an obstacle every (enemyRate) frames
-    if (this.framesCounter % 200 == 0) {
+    if (this.framesCounter % 1000 == 0 && this.powerUpOnScreen == false && this.powerSlowOnScreen == false) {
+      this.powerSlowOnScreen = true;
+      this.powersUpOnScreen = false;
       this.powerslows.push(new Powerslow(this.ctx, this.gameScreen.width, this.gameScreen.height, this.difficulty)); //pusheamos
       console.log(this.powerslows);
+      console.log("power slow on screen: " + this.powerSlowOnScreen);
     }
   },
 
@@ -221,6 +233,8 @@ const Game = {
     this.powerups.forEach((powup, idx) => {
       if (powup._posY <= 0) {
         this.powerups.splice(idx, 1);
+        this.powerUpOnScreen = false;
+        console.log(this.powerUpOnScreen);
       }
     });
   },
@@ -233,6 +247,8 @@ const Game = {
     this.powerslows.forEach((powslow, idx) => {
       if (powslow._posY <= 0) {
         this.powerslows.splice(idx, 1);
+        this.powerSlowOnScreen = false;
+        console.log(this.powerSlowOnScreen);
       }
     });
   },
@@ -265,21 +281,28 @@ const Game = {
       let yDistance = this.player._yPosition - powup._posY;
       let distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
-      if (distance <= this.player._radius + powup._puRadius && this.vulnerable) {
+      if (distance <= this.player._radius + powup._puRadius && this.vulnerable == true) {
         this.powerups.pop();
+        this.powerUpOnScreen = true;
+        this.powerSlowOnScreen = false;
         this.vulnerable = false;
-        this.player._color = "#125945";
+        this.player._color = "#08A64E";
         this.getPU.play();
-        document.getElementById("main-theme").playbackRate = 0.5;
 
         console.log(this.vulnerable);
+        document.getElementById("main-theme").playbackRate = 1.5;
 
         setTimeout(() => {
+          this.powerUpOnScreen = false;
+          this.powerSlowOnScreen = false;
+          console.log(`Power slow on screen?: ${this.powerSlowOnScreen}`);
+          console.log(`Power up on screen?: ${this.powerUpOnScreen}`);
+
           this.vulnerable = true;
           this.player._color = "#3B74BF";
           this.outPU.play();
           document.getElementById("main-theme").playbackRate = 1;
-        }, 6000);
+        }, 7000);
       }
     });
   },
@@ -294,17 +317,20 @@ const Game = {
       let yDistance = this.player._yPosition - powslow._posY;
       let distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
-      if (distance <= this.player._radius + powslow._psRadius) {
+      if (distance <= this.player._radius + powslow._psRadius && this.powerUpOnScreen == false) {
         this.powerslows.pop();
-        this.player._color = "#F2ACB2";
+        this.powerSlowOnScreen = true;
+        this.powerUpOnScreen = false;
+        this.normalspeed = false;
+        this.player._color = "#F932C0";
         this.getPU.play();
 
         let copyEnemies = this.enemies.map(enem => {
-          enem._eRadius == enem._eRadius * 0.5;
+          enem._velY = 0.3;
+          enem._velX = 0;
+
           return enem;
         });
-
-        console.log(copyEnemies);
 
         this.enemies = copyEnemies;
 
@@ -313,8 +339,25 @@ const Game = {
         setTimeout(() => {
           this.player._color = "#3B74BF";
           this.outPU.play();
+          this.normalspeed = true;
+          this.powerSlowOnScreen = false;
+          this.powerUpOnScreen = false;
+          console.log(`Power slow on screen?: ${this.powerSlowOnScreen}`);
+          console.log(`Power up on screen?: ${this.powerUpOnScreen}`);
+
+          setTimeout(() => {
+            this.generatePowerups();
+          }, 3200);
+
+          let copyEnemies2 = this.enemies.map(enem => {
+            enem._velY = 4;
+            enem._velX = 0;
+            return enem;
+          });
+          this.enemies = copyEnemies2;
+
           document.getElementById("main-theme").playbackRate = 1;
-        }, 6000);
+        }, 8000);
       }
     });
   },

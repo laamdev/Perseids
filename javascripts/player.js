@@ -55,7 +55,7 @@ class Player {
   draw() {
     this._ctx.beginPath();
     this._ctx.fillStyle = this._color;
-    this._ctx.arc(this._xPosition, this._yPosition, this._yPosition / 35 + 10, 0, 2 * Math.PI, true);
+    this._ctx.arc(this._xPosition, this._yPosition, this._yPosition / 35 + 5, 0, 2 * Math.PI, true);
     this._ctx.fill(); //Funcion que anima los frames.
   }
 }
