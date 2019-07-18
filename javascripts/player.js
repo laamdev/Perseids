@@ -22,7 +22,7 @@ class Player {
     this._pWidth = this._radius * 2;
     this._pHeight = this._radius * 2;
 
-    this._invincible = false;
+    this._color = "#3B74BF";
 
     // we call the listeners since the beggining
     this.setListeners();
@@ -40,7 +40,6 @@ class Player {
 
       this._xPosition = this._mouseX;
       this._yPosition = this._mouseY;
-
       // transforms the cursor to a crosshair
 
       this._gameScreen.style.cursor = "crosshair";
@@ -55,8 +54,8 @@ class Player {
 
   draw() {
     this._ctx.beginPath();
-    this._ctx.fillStyle = "#3B74BF";
-    this._ctx.arc(this._xPosition, this._yPosition, this._radius, 0, 2 * Math.PI, true);
+    this._ctx.fillStyle = this._color;
+    this._ctx.arc(this._xPosition, this._yPosition, this._yPosition / 35 + 10, 0, 2 * Math.PI, true);
     this._ctx.fill(); //Funcion que anima los frames.
   }
 }

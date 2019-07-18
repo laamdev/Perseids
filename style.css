@@ -5,7 +5,7 @@ body {
 h1 {
   font-family: "Monoton", cursive;
   color: #f2a444;
-  font-size: 300px;
+  font-size: 270px;
   display: flex;
   margin: auto;
   padding: 0;
@@ -21,7 +21,7 @@ h1 {
 #gameScreen {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 65px;
+  margin-top: 30px;
   margin-bottom: 0;
   border-radius: 50%;
 }
@@ -34,13 +34,13 @@ h1 {
   cursor: pointer;
   font-family: "Bungee", cursive;
   color: #f2ebdc;
-  background-color: #f24c3d;
+  background-color: #3b74bf;
   border-style: none;
   border-radius: 50%;
 }
 
 .start-button:hover {
-  color: #f2a444;
+  color: #f24c3d;
 }
 
 .game-over {
@@ -51,6 +51,7 @@ h1 {
   font-size: 150px;
   cursor: default;
   display: none;
+  letter-spacing: 10px;
 }
 .restart-button {
   width: 100px;
@@ -62,10 +63,10 @@ h1 {
   display: none;
   font-family: "Bungee", cursive;
   color: #f2ebdc;
-  background-color: #f24c3d;
+  background-color: #3b74bf;
   border-style: none;
   border-radius: 50%;
 }
 .restart-button:hover {
-  color: #f2a444;
+  color: #f24c3d;
 }
