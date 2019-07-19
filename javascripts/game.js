@@ -42,6 +42,12 @@ const Game = {
     this.outPU = new Audio("sounds/outPU.wav");
     this.outPU.volume = 0.7;
 
+    this.hit2 = new Audio("sounds/hit2.wav");
+    this.hit2.volume = 0.7;
+
+    this.click = new Audio("sounds/click.wav");
+    this.click.volume = 0.7;
+
     //starts the game
     this.start();
   },
@@ -53,11 +59,13 @@ const Game = {
   start: function() {
     // resets the game's parameters
     this.reset();
+    this.click.play();
 
     this.powerSlowOnScreen = false;
     this.powerUpOnScreen = false;
     console.log(`Power slow on screen?: ${this.powerSlowOnScreen}`);
     console.log(`Power up on screen?: ${this.powerUpOnScreen}`);
+    document.getElementById("main-theme").volume = 0.5;
 
     // sets gameloop
     this.interval = setInterval(() => {
@@ -266,6 +274,7 @@ const Game = {
       if (distance < this.player._radius + enem._eRadius && this.vulnerable) {
         console.log(this.vulnerable);
         this.hit.play();
+        this.hit2.play();
         this.gameOver();
       }
     });
@@ -379,7 +388,7 @@ const Game = {
     document.getElementById("game-over").style.display = "block";
     document.getElementById("restart-button").style.visibility = "visible";
     document.getElementById("restart-button").style.display = "block";
-    document.getElementById("main-theme").volume = 0.2;
+    document.getElementById("main-theme").volume = 0.1;
     document.getElementById("main-theme").playbackRate = 1;
 
     this.restart();
@@ -391,7 +400,7 @@ const Game = {
       this.reset();
       this.start();
       document.getElementById("restart-button").style.visibility = "hidden";
-      document.getElementById("main-theme").volume = 0.7;
+      document.getElementById("main-theme").volume = 0.5;
     };
   }
 };
