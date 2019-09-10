@@ -4,9 +4,9 @@ Click [here](https://laanayam333.github.io/Perseids/) to see the project in prog
 
 ## Built With
 
-* [HTML5]
-* [CSS6]
-* [Vanilla JavaScript]
+* HTML5
+* CSS6
+* Vanilla JavaScript
 * [Canvas](https://formidable.com/open-source/victory/)
 
 ## Author
